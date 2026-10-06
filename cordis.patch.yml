@@ -1,0 +1,3 @@
+- insert:
+    - id: npm-commands
+      name: '@zouzhipeng/dsh-npm-script'

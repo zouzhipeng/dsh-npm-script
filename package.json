@@ -1,0 +1,50 @@
+{
+  "name": "@zouzhipeng/dsh-npm-script",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Floating panel that lists, runs, and tails this workspace's npm scripts, with clickable output links",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "bundle",
+    "npm",
+    "scripts"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zouzhipeng/dsh-npm-script.git"
+  },
+  "homepage": "https://github.com/zouzhipeng/dsh-npm-script#readme",
+  "bugs": {
+    "url": "https://github.com/zouzhipeng/dsh-npm-script/issues"
+  },
+  "icon": "icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout"
+      ]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "NPM Commands",
+    "description": "Lists this workspace's npm scripts in a floating panel, runs them, and tails their output."
+  }
+}
