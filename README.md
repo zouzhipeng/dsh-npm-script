@@ -1,101 +1,143 @@
 # dsh-npm-script
 
-为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web 界面添加一个**悬浮按钮**，点击后按项目分组列出当前工作区下的所有 npm 命令，并可以直接运行、停止、查看输出。
+[![npm version](https://img.shields.io/npm/v/%40zouzhipeng%2Fdsh-npm-script.svg)](https://www.npmjs.com/package/@zouzhipeng/dsh-npm-script)
+[![license](https://img.shields.io/npm/l/%40zouzhipeng%2Fdsh-npm-script.svg)](LICENSE)
 
-> A floating button for the DeepSeek Harness Web UI that lists every npm script in the current workspace, grouped by project, and runs them with live status and captured output.
+**English** · [简体中文](#简体中文)
 
-## 功能
+A floating button for the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI. One click lists every npm script in your workspace, grouped by project, and lets you run them, stop the long-lived ones, and read their captured output. Any `http(s)` address printed by a script becomes a clickable link that opens in a new tab, so a dev server's debug URL is always one click away.
 
-- **悬浮按钮** — 常驻界面右下角，不占用任何面板空间。
-- **按项目分组** — 一个工作区可以有多个项目（monorepo、多个子目录），自动扫描每个 `package.json` 并按项目分组展示脚本。
-- **运行状态可见** — 每个命令显示当前状态：**执行中** / **可执行** / **停止中**。常驻命令（如前端 `npm run dev`）会一直保持"执行中"，可以随时停止。
-- **输出记录** — 查看命令执行时捕获的 stdout / stderr，运行中可实时轮询刷新。
-- **网址可点击** — 输出中出现的 `http://` / `https://` 地址会自动变成链接，点击在浏览器新建标签页打开；面板顶部还会把本次运行出现过的所有地址汇总成一行快捷入口。前端 `npm run dev` 打印的调试地址可以直接点开。
-- **中英双语** — 跟随 Harness 的界面语言。
+![Command list grouped by project](https://raw.githubusercontent.com/zouzhipeng/dsh-npm-script/main/assets/screenshots/commands-list.png)
 
-## 安装
+## Features
 
-需要已安装并运行 DeepSeek Harness。以下两种方式任选其一。
+- **Floating launcher** — a small button pinned to the bottom-right corner; nothing is added to your panels.
+- **Grouped by project** — scans the whole workspace, so a monorepo or several subprojects each get their own section of scripts.
+- **Live status per command** — running / runnable / stopped is shown next to every script. Long-lived commands such as `npm run dev` keep a running state until you stop them.
+- **Captured output** — stdout and stderr are collected while a script runs and stay readable after it exits.
+- **Clickable URLs** — `http://` and `https://` addresses in the output are rendered as links (new tab) and collected into a shortcuts row above the log. Dev servers that print their debug address work out of the box.
+- **Bilingual UI** — follows the Harness interface language (English / 简体中文).
 
-### 方式一：Web 界面
+![Captured output with a link](https://raw.githubusercontent.com/zouzhipeng/dsh-npm-script/main/assets/screenshots/output-view.png)
 
-1. 打开 Harness Web 界面，进入侧边栏的 **Plugins**（插件）页面。
-2. 在安装输入框中填入：
+## Install
+
+Requires a running DeepSeek Harness. Either path works.
+
+### Web UI
+
+1. Open the Harness Web UI and go to **Plugins** in the sidebar.
+2. Paste this spec into the install field:
 
    ```
    github:zouzhipeng/dsh-npm-script
    ```
 
-3. 确认安装，并确保该 bundle 处于**启用**状态。
-4. 刷新页面。
+3. Confirm, make sure the bundle is **enabled**, then refresh the page.
 
-### 方式二：命令行
-
-```sh
-dsh plugin --profile web add github:zouzhipeng/dsh-npm-script
-```
-
-安装完成后，在 Web 界面的 Plugins 页面启用 **dsh-npm-script** bundle，然后刷新页面。
-
-### 更新
-
-重新执行一次安装即可拉取最新版本：
+### CLI
 
 ```sh
 dsh plugin --profile web add github:zouzhipeng/dsh-npm-script
 ```
 
-### 卸载
+The bundle is selected automatically. Refresh the Web UI afterwards.
 
-在 Plugins 页面移除，或执行：
+The package is also published on [npm](https://www.npmjs.com/package/@zouzhipeng/dsh-npm-script) as `@zouzhipeng/dsh-npm-script`; publishing there only adds download statistics, installation still resolves from GitHub.
+
+### Update
+
+Re-run the install command to pull the latest version:
+
+```sh
+dsh plugin --profile web add github:zouzhipeng/dsh-npm-script
+```
+
+### Uninstall
+
+Remove it from the Plugins page, or run:
 
 ```sh
 dsh plugin --profile web remove @zouzhipeng/dsh-npm-script
 ```
 
-## 使用
+## Usage
 
-1. 点击界面右下角的悬浮按钮，打开命令面板。
-2. 面板按项目分组列出所有 `package.json` 中的 `scripts`。
-3. 点击命令名开始执行；执行中的命令会显示停止按钮。
-4. 点击命令查看它的输出记录。输出里的网址可以直接点击打开。
+1. Click the floating button at the bottom-right to open the panel.
+2. Scripts from every `package.json` are listed, grouped by project.
+3. Click a command to run it; running commands show a stop button.
+4. Open **Output** to read stdout and stderr. URLs in the output are clickable.
 
-按 `Esc` 关闭面板；如果正在查看输出，第一次按 `Esc` 会先退回命令列表。
+Press `Esc` to close the panel. While viewing output, the first `Esc` returns to the command list.
 
-## 工作方式
+## Configuration
 
-插件由两半组成：
+Optional settings can be overridden through `config` in the profile's `cordis.yml`:
 
-- **Host 半**（`index.js`）通过 Harness 的 `workspaceRegistry` 解析当前工作区，扫描其中的 `package.json`，并通过 `subprocess` 服务启动脚本。所有 HTTP 路由都限制为仅本机回环访问。
-- **Client 半**（`client.js`）通过 `shell.overlay` 插槽渲染悬浮按钮和面板，从 Host 的同源 JSON 路由获取数据。
-
-执行脚本时会注入 `NO_COLOR=1`、`TERM=dumb`、`PAGER=cat`、`GIT_PAGER=cat`，让工具输出纯文本，这样打印出来的地址才能被完整识别为链接。客户端另外会剥离 ANSI 转义序列作为兜底。
-
-## 配置
-
-插件支持以下可选项（在 profile 的 `cordis.yml` 中通过 `config` 覆盖）：
-
-| 字段 | 默认值 | 说明 |
+| Field | Default | Meaning |
 | --- | --- | --- |
-| `scanDepth` | `3` | 扫描 `package.json` 的最大目录深度。 |
-| `maxOutputBytes` | `262144` | 每个输出流在内存中保留的最大字节数（保留末尾）。 |
-| `maxSpillBytes` | `8388608` | 溢出到磁盘的最大字节数。 |
-| `graceMs` | `5000` | 停止命令时，等待进程优雅退出的毫秒数，超时后强制终止。 |
-| `historyLimit` | `20` | 保留的历史运行记录条数。 |
-| `scanCacheMs` | `5000` | 项目扫描结果的缓存毫秒数。 |
+| `scanDepth` | `3` | Maximum directory depth to scan for `package.json`. |
+| `maxOutputBytes` | `262144` | Bytes of each output stream kept in memory (tail). |
+| `maxSpillBytes` | `8388608` | Maximum bytes spilled to disk. |
+| `graceMs` | `5000` | Grace period before force-terminating a stopped command. |
+| `historyLimit` | `20` | Number of past runs retained. |
+| `scanCacheMs` | `5000` | Cache lifetime for the project scan. |
 
-## 环境要求
+## How it works
 
-- DeepSeek Harness，profile 为 `web`。
-- 仅支持 macOS / Linux / Windows 上 Harness 本身支持的平台。
-- 命令来源仅限 `package.json` 的 `scripts` 字段。
+The plugin has two halves:
 
-## 已知限制
+- **Host** (`index.js`) resolves the current workspace through Harness's `workspaceRegistry`, scans it for `package.json`, and launches scripts through the `subprocess` service. All HTTP routes are restricted to loopback.
+- **Client** (`client.js`) renders the floating button and panel in the `shell.overlay` slot and talks to the Host over same-origin JSON routes.
 
-- 输出中仅 `http://` 与 `https://` 地址会被识别为链接（`ws://` 不识别，因为它无法在浏览器中直接打开）。
-- 命令列表来自 `package.json` 的 `scripts`，不包含任意 npm 子命令。
-- Host 半的代码改动需要重启 `dsh web` 才能生效（Harness 默认不对 Host 侧模块做热加载）；Client 半的改动刷新页面即可。
+Scripts are spawned with `NO_COLOR=1`, `TERM=dumb`, `PAGER=cat` and `GIT_PAGER=cat` so tools emit plain text and printed addresses stay intact. The client strips ANSI escapes as a fallback.
 
-## 许可
+## Requirements
+
+- DeepSeek Harness with the `web` profile.
+- Any platform supported by Harness (macOS / Linux / Windows).
+- Commands come only from the `scripts` field of `package.json`.
+
+## Known limitations
+
+- Only `http://` and `https://` addresses become links (`ws://` is excluded — a browser cannot open it directly).
+- The command list comes from `package.json` scripts; arbitrary npm subcommands are not included.
+- Host-side code changes need a `dsh web` restart (node-side hot reload is off by default); Client changes apply on refresh.
+
+## License
+
+[MIT](LICENSE)
+
+---
+
+## 简体中文
+
+为 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web 界面添加一个**悬浮按钮**：点击后按项目分组列出工作区里所有 `package.json` 脚本，可直接运行、停止常驻命令（如 `npm run dev`）、查看捕获的 stdout / stderr。输出里的 `http(s)` 地址会变成可点击链接并在新标签页打开，同时在日志上方汇总成一行快捷入口。
+
+### 安装
+
+Web 界面 **Plugins** 页填入 `github:zouzhipeng/dsh-npm-script`，或执行：
+
+```sh
+dsh plugin --profile web add github:zouzhipeng/dsh-npm-script
+```
+
+装完启用 bundle 并刷新页面。也可从 [npm](https://www.npmjs.com/package/@zouzhipeng/dsh-npm-script) 安装以显示下载量。
+
+### 使用
+
+点击右下角悬浮按钮打开面板；按项目分组列出脚本；点命令执行，执行中的命令显示停止按钮；点「输出」查看日志，日志里的网址可直接点击。按 `Esc` 关闭面板，查看输出时第一次 `Esc` 先返回列表。
+
+### 配置
+
+在 profile 的 `cordis.yml` 中通过 `config` 覆盖，可选项：`scanDepth`（3）、`maxOutputBytes`（262144）、`maxSpillBytes`（8388608）、`graceMs`（5000）、`historyLimit`（20）、`scanCacheMs`（5000）。
+
+### 限制
+
+- 仅 `http://` / `https://` 地址识别为链接，`ws://` 不识别。
+- 命令只来自 `package.json` 的 `scripts`，不含任意 npm 子命令。
+- Host 半代码改动需重启 `dsh web`，Client 半刷新页面即可。
+
+### 许可
 
 [MIT](LICENSE)

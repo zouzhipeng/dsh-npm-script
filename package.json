@@ -1,8 +1,8 @@
 {
   "name": "@zouzhipeng/dsh-npm-script",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
-  "description": "Floating panel that lists, runs, and tails this workspace's npm scripts, with clickable output links",
+  "description": "A floating button for the DeepSeek Harness Web UI that lists every npm script in the workspace grouped by project, runs and stops them with live status, tails captured output, and turns printed http(s) URLs into clickable links.",
   "keywords": [
     "dsh",
     "deepseek-harness",
